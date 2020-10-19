@@ -1,6 +1,5 @@
 package com.apirest.resources;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,11 +47,20 @@ public class FotoResource {
 
 	}
 
-	@PostMapping("/send")
-	@ApiOperation(value = "Salvar Fotos")
-	public Foto salvar(@RequestBody Foto foto) {
+	@RequestMapping(method = RequestMethod.POST, value = "/foto")
+	@ApiOperation(value = "Salva a imagem")
+	public ResponseEntity<String> receiveData(MultipartFile img) throws IOException {
 
-		return desafioRepository.save(foto);
+		Foto foto = new Foto();
+		byte[] byteArr;
+		byteArr = img.getBytes();
+		String text = Base64.getEncoder().encodeToString(byteArr);
+		foto.setFoto(text);
+		System.out.println("IMG" + foto.getFoto());
+		desafioRepository.save(foto);
+		
+		return ResponseEntity.ok("Imagem Salva com Sucesso!!");
+
 	}
 
 	@DeleteMapping("/foto")
@@ -68,21 +75,6 @@ public class FotoResource {
 		return desafioRepository.save(foto);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, value = "/foto")
-	public ResponseEntity<String> receiveData(MultipartFile img) throws IOException {
-
-		Foto foto = new Foto();
-		byte[] byteArr;
-		
-
-		byteArr = img.getBytes();
-		String text = Base64.getEncoder().encodeToString(byteArr);
-		foto.setFoto(text);
-		System.out.println("IMG" + foto.getFoto());
-		desafioRepository.save(foto);
-		
-		return ResponseEntity.ok("Imagem Salva com Sucesso!!");
-
-	}
+	
 
 }
